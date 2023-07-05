@@ -1,0 +1,34 @@
+{
+  "name": "relational-indexdb",
+  "version": "1.0.4",
+  "description": "This is an indexDB database relational encapsulation",
+  "main": "./dist/relational-indexdb.js",
+  "author": "AyongNice@163.com",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "vite build",
+    "prepublishOnly": "npm run build"
+  },
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org/"
+  },
+  "keywords": [
+    "relational",
+    "storage",
+    "circumstance",
+    "typescript",
+    "indexDB",
+    "关系型",
+    "存储",
+    "轻量级"
+  ],
+  "license": "ISC",
+  "devDependencies": {
+    "typescript": "^4.9.5",
+    "vite": "^4.2.1"
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ]
+}
