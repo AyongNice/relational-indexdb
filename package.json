@@ -1,6 +1,6 @@
 {
   "name": "relational-indexdb",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "description": "This is an indexDB database relational encapsulation",
   "main": "./dist/relational-indexdb.js",
   "author": "AyongNice@163.com",
@@ -8,6 +8,10 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "vite build",
     "prepublishOnly": "npm run build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/AyongNice/relational-indexdb"
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org/"
@@ -28,7 +32,6 @@
     "vite": "^4.2.1"
   },
   "files": [
-    "dist",
-    "README.md"
+    "dist"
   ]
 }
