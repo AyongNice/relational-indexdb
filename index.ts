@@ -1,38 +1,60 @@
-class Index {
+class RelationalIndexDB {
     private db: IDBDatabase;
     private tableName: String;
     private databaseName: String
     private version: number = 1
     static IndexDBComponent
 
-    constructor(databaseName: string, version: number, tableName: string, keyPath: string, autoIncrement, indexConfigs: {
-        name: string;
-        keyPath: string;
-        unique: string;
-    }[]) {
+    constructor(databaseName: string, version: number, createTableConfig) {
         this.databaseName = databaseName
         this.version = version
 
-        const request: IDBOpenDBRequest = indexedDB.open(this.databaseName, version);
+        const request: IDBOpenDBRequest = indexedDB.open(this.databaseName as string, version);
 
         request.onsuccess = (event) => {
             this.db = (event.target as IDBOpenDBRequest).result;
+
         };
 
         request.onupgradeneeded = (event) => {
-            // 在升级事件中创建新表
+            // // 在升级事件中创建新表
             this.db = request.result;
+            createTableConfig.forEach((item) => {
+                if (!this.db.objectStoreNames.contains(item.tableName)) {
+                    const objectStore = this.db.createObjectStore(item.tableName, {
+                        keyPath: item.keyPath,
+                        autoIncrement: item.autoIncrement
+                    });
+                    item.keyConfig.forEach((indexConfig) => {
+                        objectStore.createIndex(indexConfig.name, indexConfig.keyPath, {unique: indexConfig.unique});
+                    });
+                }
+            })
 
-            if (!this.db.objectStoreNames.contains(tableName)) {
-                const objectStore = this.db.createObjectStore(tableName, {keyPath: keyPath, autoIncrement: true});
-                indexConfigs.forEach((indexConfig) => {
-                    objectStore.createIndex(indexConfig.name, indexConfig.keyPath, {unique: indexConfig.unique});
-                });
-            }
         };
         request.onerror = (event) => {
 
         };
+    }
+
+    createTable2(tableName, keyPath, autoIncrement, tableSchema) {
+        const waitForConnection = () => {
+            if (this.db) {
+                const objectStore = this.db.createObjectStore(tableName, {keyPath, autoIncrement});
+
+                // 创建索引
+                for (const field in tableSchema) {
+                    objectStore.createIndex(field, field, {unique: false});
+                }
+
+                console.log(`Table '${tableName}' created successfully!`);
+            } else {
+                setTimeout(waitForConnection, 100);
+            }
+        };
+
+        waitForConnection();
+
     }
 
     /**
@@ -47,15 +69,15 @@ class Index {
         const waitForConnection = () => {
             if (this.db) {
                 this.db.close()
-                const request: IDBOpenDBRequest = indexedDB.open(this.databaseName, 2);
+                this.db = null
+                const request: IDBOpenDBRequest = indexedDB.open(this.databaseName as string, version);
                 request.onsuccess = (event) => {
                     this.db = (event.target as IDBOpenDBRequest).result;
-                    console.log(1111)
-
                 };
                 request.onupgradeneeded = (event) => {
                     // 在升级事件中创建新表
                     this.db = request.result;
+                    console.log('createTable', this.db)
                     if (!this.db.objectStoreNames.contains(tableName)) {
                         const objectStore: IDBObjectStore = this.db.createObjectStore(tableName, {
                             keyPath: keyPath,
@@ -80,11 +102,13 @@ class Index {
 
     /**
      * 添加记录到对象存储空间
+     * @param tableName
      * @param data{string| number} 主键
      * @returns Promise<void>
      */
     public addRecord(tableName: string, data: any): Promise<void> {
         return new Promise((resolve, reject) => {
+
             // 等待数据库连接成功后执行操作
             const waitForConnection = () => {
                 if (this.db) {
@@ -121,6 +145,36 @@ class Index {
                     const transaction: IDBTransaction = this.db.transaction([tableName], 'readonly');
                     const objectStore: IDBObjectStore = transaction.objectStore(tableName);
                     const request: IDBRequest<unknown> = objectStore.get(key);
+
+                    request.onsuccess = (): void => {
+                        resolve(request.result);
+                    };
+
+                    request.onerror = (event): void => {
+                        reject(event.target.error);
+                    };
+                } else {
+                    setTimeout(waitForConnection, 100);
+                }
+            };
+
+            waitForConnection();
+
+        });
+    }
+
+    /**
+     * 查询表所有数据
+     * @param tableName 表名
+     * @returns Promise<any> 返回查询结果
+     */
+    public queryTableAll(tableName: string): Promise<any> {
+        return new Promise((resolve, reject): void => {
+            const waitForConnection = (): void => {
+                if (this.db) {
+                    const transaction: IDBTransaction = this.db.transaction([tableName], 'readonly');
+                    const objectStore: IDBObjectStore = transaction.objectStore(tableName);
+                    const request: IDBRequest<unknown> = objectStore.getAll();
 
                     request.onsuccess = (): void => {
                         resolve(request.result);
@@ -652,4 +706,4 @@ class Index {
     }
 }
 
-export default Index
+export default RelationalIndexDB
