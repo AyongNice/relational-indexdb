@@ -1,3 +1,4 @@
+#关注 微信公众号 阿勇学前端
 # relational-indexdb 使用说明
 
 ##### IndexedDB：
@@ -38,22 +39,51 @@
 | :------------ | -------------- | ------------ |
 | databaseName  | string         | 数据库名称   |
 | version       | number         | 数据库版本号 |
-| tableName     | string         | 表名         |
-| keyPath       | string         | 主键         |
-| autoIncrement | boolean        | 是否自增     |
-| indexConfigs  | IndexConfigs[] | 索引配置     |
+| createTableConfig|createTableConfig[] |数据库表配置|
 
+createTableConfig 字段介绍
+| 参数          | 类型           | 描述         |
+| :------------ | -------------- | ------------ |
+| tableName     | string         | 表名     |
+| keyPath       | string         | 主键     |
+| autoIncrement | boolean        | 是否自增 |
+| indexConfigs  | IndexConfigs[] | 索引配置 |
+
+IndexConfigs字段介绍
+| 参数          | 类型           | 描述         |
+| :------------ | -------------- | ------------ |
+| name     | string         | 表名     |
+| unique       | string         | 字段索引是否唯一     |
+| keyPath       | string         |主键    |
+使用示例如下
 ```javascript
-const tableName = 'myTable';
-const version = 1;
-const keyPath = 'id';
-const tableSchema = [
-    {name: 'id', keyPath: 'id', unique: true},
-    {name: 'issue', keyPath: 'issue', unique: false},
-    {name: 'answer', keyPath: 'answer', unique: false},
-];
-//在new RelationalIndexDB 示例时候将会创建一个数据表
-const indexDB = new RelationalIndexDB('ayong', 1, tableName, keyPath, true, tableSchema);
+ const tableName = 'table1';
+        const titletableName = 'table2';
+        const tableSchema = [
+            {name: 'id', keyPath: 'id', unique: true},
+            {name: 'title', keyPath: 'title', unique: false},
+            {name: 'list', keyPath: 'list', unique: false},
+        ];
+        const tableSchemaTitle = [
+            {name: 'id', keyPath: 'id', unique: true},
+            {name: 'title', keyPath: 'title', unique: false},
+            {name: 'issueId', keyPath: 'issueId', unique: false},
+        ];
+        const createTableConfig = [
+            {
+                tableName: tableName,
+                keyPath: 'id',
+                autoIncrement: true,
+                keyConfig: tableSchema
+            },
+            {
+                tableName: titletableName,
+                keyPath: 'id',
+                autoIncrement: true,
+                keyConfig: tableSchemaTitle
+            }
+        ]
+        this.indexDB = new RelationalIndexDB('chatGpt', 1, createTableConfig);
 ```
 
 
