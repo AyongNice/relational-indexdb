@@ -1,6 +1,7 @@
 class RelationalIndexDB {
     private db: IDBDatabase;
     private tableName: String;
+
     private databaseName: String
     private version: number = 1
     static IndexDBComponent
