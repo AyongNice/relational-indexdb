@@ -1,4 +1,5 @@
-#关注 微信公众号 阿勇学前端
+# 关注 微信公众号 阿勇学前端
+# 组件下载安装方式 npm i relational-indexdb 
 # relational-indexdb 使用说明
 
 ##### IndexedDB：
