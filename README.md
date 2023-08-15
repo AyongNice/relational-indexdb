@@ -91,7 +91,7 @@ IndexConfigs字段介绍
 
 
 
-### 方法methds ⚠️ 所有方法返回值都是proms
+### 方法methds ⚠️ 所有方法返回值都是Promise
 
 #### createTable(tableName, version, keyPath, autoIncrement, indexConfigs)
 
